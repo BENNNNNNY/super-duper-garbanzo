@@ -11,8 +11,8 @@ Game::Game(int x, int y) {
 	// Dynamically sets the number of bombs based on board size.
 	NumBombs = (BoardXSize * BoardYSize) / 10;
 	// Loops through every cell on the board...
-	for(int i = 0; i < BoardXSize + 2; i++) {
-		for(int j = 0; j < BoardYSize + 2; j++) {
+	for(int i = 0; i < BoardXSize + 1; i++) {
+		for(int j = 0; j < BoardYSize + 1; j++) {
 			// ...and creates a cell in each position.
 			temp.SetXPos(i);
 			temp.SetYPos(j);
@@ -25,8 +25,8 @@ Game::Game(int x, int y) {
 int Game::CheckGameFinish() {
 	int count = 0;
 	// Loops through every cell on the board...
-	for(int i = 1; i < BoardXSize + 1; i++) {
-		for(int j = 1; j < BoardYSize + 1; j++) {
+	for(int i = 0; i < BoardXSize; i++) {
+		for(int j = 0; j < BoardYSize; j++) {
 			// ...and counts the ones that have been revealed.
 			count += Board[i][j].IsRevealed();
 		}
@@ -52,11 +52,11 @@ int Game::ClearCell(int xpos, int ypos) {
 		if(!Board[xpos][ypos].GetNumNeighbours()) {
 			// Only clears cells on the field (if the choosen cell was an edge, it
 			// could go into non existent cells.
-			if(ypos != 1) ClearCell(xpos, ypos - 1);
+			if(ypos != 0) ClearCell(xpos, ypos - 1);
 			if(ypos != BoardYSize) ClearCell(xpos, ypos + 1);
-			if(xpos != 1 && ypos != 1) ClearCell(xpos - 1, ypos - 1);
-			if(xpos != 1) ClearCell(xpos - 1, ypos);
-			if(xpos != 1 && ypos != BoardYSize) ClearCell(xpos - 1, ypos + 1);
+			if(xpos != 0 && ypos != 1) ClearCell(xpos - 1, ypos - 1);
+			if(xpos != 0) ClearCell(xpos - 1, ypos);
+			if(xpos != 0 && ypos != BoardYSize) ClearCell(xpos - 1, ypos + 1);
 			if(xpos != BoardXSize && ypos != 1) ClearCell(xpos + 1, ypos - 1);
 			if(xpos != BoardXSize) ClearCell(xpos + 1, ypos);
 			if(xpos != BoardXSize && ypos != BoardYSize) ClearCell(xpos + 1, ypos + 1);
@@ -80,10 +80,10 @@ void Game::PrintBoard() {
 	clear();
 	
 	// Goes through each cell in the array...
-	for(int i = 1; i < BoardXSize + 1; i++) {
-		for(int j = 1; j < BoardYSize + 1; j++) {
+	for(int i = 0; i < BoardXSize; i++) {
+		for(int j = 0; j < BoardYSize; j++) {
 			// ...moves to the coresponding spot on the screen...
-			move(j - 1, (i - 1) * 2);
+			move(j, i * 2);
 
 			// ...and if the cell is flagged, it will display as such, if the cell is
 			// revealed it will display the number of neighbours with bombs (or a space
@@ -118,13 +118,13 @@ void Game::GenerateBoard(int initialX, int initialY) {
 	// Loops once for each bomb.
 	for(int i = 0; i < NumBombs; i++) {
 		// Initial attempts at finding a free cell.
-		xpos = rand() % BoardXSize + 1;
-		ypos = rand() % BoardYSize + 1;
+		xpos = rand() % BoardXSize;
+		ypos = rand() % BoardYSize;
 
 		// Loops until a free cell is found.
 		do {
-			xpos = rand() % BoardXSize + 1;
-			ypos = rand() % BoardYSize + 1;
+			xpos = rand() % BoardXSize;
+			ypos = rand() % BoardYSize;
 		} while(Board[xpos][ypos].IsBomb());
 
 		// Once a free cell is found, the cell is set to be a bomb.
@@ -196,17 +196,17 @@ void Game::Start() {
 				break;
 			case 120:	// x key.
 				// Toggles the flag of the selected cell.
-				Board[xpos / 2 + 1][ypos + 1].ToggleFlag();
+				Board[xpos / 2][ypos].ToggleFlag();
 				PrintBoard();
 				break;
 			case 32:	// Space key.
 				// Generates the board after the first move.
 				if(firstMove) {
 					firstMove = 0;
-					GenerateBoard(xpos / 2 + 1, ypos + 1);
+					GenerateBoard(xpos / 2, ypos);
 				}
 				// Clears the cells and checks if the player has slected a bomb.
-				if(ClearCell(xpos / 2 + 1, ypos + 1)) gameEnd = 1;
+				if(ClearCell(xpos / 2, ypos)) gameEnd = 1;
 				// Prints the board for the player.
 				PrintBoard();
 				// Checks if the game has finished.
