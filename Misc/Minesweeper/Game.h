@@ -4,10 +4,7 @@
 
 class Game {
 private:
-	// On finishing the program, I realise I don't need to have a
-	// border around the game unlike previous versions. Could be
-	// removed (should be removed) to make it 100x100 but lazy
-	Cell Board[102][102];
+	Cell Board[100][100];
 	int BoardXSize;
 	int BoardYSize;
 	int NumBombs;
